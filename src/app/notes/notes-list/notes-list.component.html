@@ -1,0 +1,37 @@
+<div *ngIf="!loading">
+    <div *ngIf="notes?.length > 0">
+        <div class="sort">
+            <form>
+                <mat-form-field>
+                    <mat-label>Search Notes by Title</mat-label>
+                    <input matInput name="search" [(ngModel)]="searchText" autocomplete="off" />
+                </mat-form-field>
+            </form>
+            <button mat-icon-button (click)="reverse()" [matTooltip]="
+          tooltip ? 'Show latest notes first' : 'Show oldest notes first'
+        ">
+        <mat-icon>swap_vert</mat-icon>
+      </button>
+            <app-icon-toggle (click)="changeLayout()" (stateChanged)="onIconToggleStateChange($event)" [onStateIcon]="gridIcon" [offStateIcon]="listIcon"></app-icon-toggle>
+        </div>
+        <div class="notes-list" [ngClass]="notesLayout ? 'grid-layout' : 'list-layout'">
+            <div *ngFor="
+          let group of (isReversed ? (notes | reverse) : notes)
+            | group: 'newTimestamp'
+        ">
+                <!-- <small>{{ group.key | date: 'MM/dd/yyyy' }}</small> -->
+                <div [@listAnimation]="notes?.length">
+                    <div *ngFor="let note of group.value | search: searchText">
+                        <app-notes-list-item [note]="note"></app-notes-list-item>
+                    </div>
+                </div>
+            </div>
+            <div *ngIf="(notes | search: searchText)?.length === 0">
+                <p>No Results Found!</p>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="notes?.length < 1">
+        No notes yet. Click on the button below and create a new note now!
+    </div>
+</div>
